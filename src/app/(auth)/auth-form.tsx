@@ -12,6 +12,7 @@ import {
   MailCheckIcon,
 } from "lucide-react";
 
+import { FadeIn } from "@/components/fade-in";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,12 +49,7 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
   const copy = COPY[mode];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="w-full max-w-[380px]"
-    >
+    <FadeIn className="w-full max-w-[380px]">
       <div className="mb-8 space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">{copy.title}</h1>
         <p className="text-sm text-muted-foreground">{copy.subtitle}</p>
@@ -79,6 +75,8 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
         ) : (
           <motion.form
             key="form"
+            initial={false}
+            exit={{ opacity: 0 }}
             action={formAction}
             className="space-y-5"
             noValidate
@@ -166,6 +164,6 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
           </motion.form>
         )}
       </AnimatePresence>
-    </motion.div>
+    </FadeIn>
   );
 }

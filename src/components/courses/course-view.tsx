@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeftIcon,
   CalendarClockIcon,
@@ -236,29 +236,26 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
         </div>
       </div>
 
-      <AnimatePresence mode="wait" initial={false} custom={direction}>
-        <motion.div
-          key={week.id}
-          custom={direction}
-          initial={{ opacity: 0, x: direction * 12 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: direction * -12 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_340px]"
-        >
-          <TopicList
-            weekId={week.id}
-            topics={topics.filter((t) => t.week_id === week.id)}
-            stats={weekStats[week.id]}
-            setTopics={setTopics}
-          />
-          <LevelCard
-            weekId={week.id}
-            level={levels[week.id] ?? 0}
-            onLocalChange={(v) => setLevels((s) => ({ ...s, [week.id]: v }))}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Çıkış animasyonu yok: eski haftanın paneli ekranda kalıp yanlış haftaya yazılmasın. */}
+      <motion.div
+        key={week.id}
+        initial={{ opacity: 0, x: direction * 12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_340px]"
+      >
+        <TopicList
+          weekId={week.id}
+          topics={topics.filter((t) => t.week_id === week.id)}
+          stats={weekStats[week.id]}
+          setTopics={setTopics}
+        />
+        <LevelCard
+          weekId={week.id}
+          level={levels[week.id] ?? 0}
+          onLocalChange={(v) => setLevels((s) => ({ ...s, [week.id]: v }))}
+        />
+      </motion.div>
 
       <CourseFormDialog open={editOpen} onOpenChange={setEditOpen} course={course} />
 

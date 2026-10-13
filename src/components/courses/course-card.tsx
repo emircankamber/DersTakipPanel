@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowUpRightIcon, CalendarClockIcon } from "lucide-react";
 
+import { FadeIn } from "@/components/fade-in";
 import { courseColor } from "@/lib/colors";
 import { nextExam } from "@/lib/exams";
 import { getCurrentWeek, relativeDays, todayISO } from "@/lib/semester";
@@ -19,11 +19,7 @@ export function CourseCard({ course, index = 0 }: { course: CourseBundle; index?
   const exam = nextExam(course, today);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <FadeIn delay={index * 0.04}>
       <Link
         href={`/dersler/${course.id}`}
         className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card p-5 outline-none transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-lg hover:shadow-black/[0.04] focus-visible:ring-[3px] focus-visible:ring-ring/40"
@@ -89,6 +85,6 @@ export function CourseCard({ course, index = 0 }: { course: CourseBundle; index?
           )}
         </div>
       </Link>
-    </motion.div>
+    </FadeIn>
   );
 }

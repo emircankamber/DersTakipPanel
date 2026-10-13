@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { courseColor } from "@/lib/colors";
@@ -82,16 +81,16 @@ export function Heatmap({ courses, maxWeeks }: { courses: DashboardCourse[]; max
                         aria-label={`${c.name}, ${w}. hafta, seviye ${level}`}
                         className="block outline-none"
                       >
-                        <motion.span
-                          initial={{ opacity: 0, scale: 0.6 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.25, delay: ci * 0.04 + w * 0.012 }}
+                        <span
                           className={cn(
-                            "block h-7 w-full rounded-[4px] transition-[transform,box-shadow] hover:scale-105 sm:h-8",
+                            "block h-7 animate-in fade-in-0 zoom-in-75 fill-mode-both duration-300 motion-reduce:animate-none w-full rounded-[4px] transition-[transform,box-shadow] hover:scale-105 sm:h-8",
                             past ? "bg-muted" : "border border-dashed border-foreground/15",
                             current && "ring-1 ring-foreground/60 ring-offset-1 ring-offset-card",
                           )}
-                          style={past ? { backgroundColor: heatColor(level) } : undefined}
+                          style={{
+                            animationDelay: `${ci * 40 + w * 12}ms`,
+                            ...(past ? { backgroundColor: heatColor(level) } : {}),
+                          }}
                         />
                       </Link>
                     </TooltipTrigger>

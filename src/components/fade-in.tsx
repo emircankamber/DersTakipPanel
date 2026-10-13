@@ -1,18 +1,22 @@
-"use client";
+import { cn } from "@/lib/utils";
 
-import { motion, type HTMLMotionProps } from "framer-motion";
-
-/** Sunucu bileşenlerinden kullanılabilen yumuşak giriş animasyonu. */
+/**
+ * Yumuşak giriş animasyonu — saf CSS, JS yüklenmeden de içerik görünür.
+ * prefers-reduced-motion açıksa animasyon kapanır.
+ */
 export function FadeIn({
   delay = 0,
-  y = 6,
+  className,
+  style,
   ...props
-}: HTMLMotionProps<"div"> & { delay?: number; y?: number }) {
+}: React.ComponentProps<"div"> & { delay?: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      className={cn(
+        "animate-in fade-in-0 slide-in-from-bottom-1.5 fill-mode-both duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none",
+        className,
+      )}
+      style={{ animationDelay: `${delay}s`, ...style }}
       {...props}
     />
   );

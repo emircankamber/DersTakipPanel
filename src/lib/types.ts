@@ -26,6 +26,8 @@ export type Topic = {
   done: boolean;
   position: number;
   created_at: string;
+  /** Yalnızca istemcide: iyimser eklemede animasyon anahtarını sabit tutar. */
+  _key?: string;
 };
 
 export type ActionResult = { ok: true } | { ok: false; error: string };

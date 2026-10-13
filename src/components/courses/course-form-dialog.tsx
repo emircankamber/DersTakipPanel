@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { COLOR_KEYS, COURSE_COLORS, type CourseColor } from "@/lib/colors";
+import { COLOR_KEYS, COURSE_COLORS, courseColor, type CourseColor } from "@/lib/colors";
 import { todayISO } from "@/lib/semester";
 import type { Course } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ type Props = {
 function initialState(course?: Course, defaults?: Props["defaults"]): CourseInput {
   return {
     name: course?.name ?? "",
-    color: course?.color ?? defaults?.color ?? "emerald",
+    color: course?.color ?? defaults?.color ?? "blue",
     start_date: course?.start_date ?? defaults?.start_date ?? todayISO(),
     week_count: course?.week_count ?? 14,
     midterm_date: course?.midterm_date ?? null,
@@ -126,7 +126,7 @@ export function CourseFormDialog({ open, onOpenChange, course, defaults }: Props
                       "flex size-8 items-center justify-center rounded-full ring-offset-2 ring-offset-popover transition-[box-shadow,transform] outline-none hover:scale-105 focus-visible:ring-2 focus-visible:ring-ring",
                       selected && "ring-2 ring-foreground/70",
                     )}
-                    style={{ backgroundColor: COURSE_COLORS[key].hex }}
+                    style={{ backgroundColor: courseColor(key) }}
                   >
                     {selected && <CheckIcon className="size-4 text-white drop-shadow" strokeWidth={3} />}
                   </button>

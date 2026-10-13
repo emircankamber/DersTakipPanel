@@ -34,7 +34,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { colorHex } from "@/lib/colors";
+import { courseColor } from "@/lib/colors";
 import { upcomingExams } from "@/lib/exams";
 import { formatRange, formatShort, getCurrentWeek, relativeDays, todayISO } from "@/lib/semester";
 import type { Course, Topic, Week } from "@/lib/types";
@@ -76,7 +76,7 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
 
   const today = todayISO();
   const info = getCurrentWeek(course, today);
-  const hex = colorHex(course.color);
+  const hex = courseColor(course.color);
   const exams = upcomingExams(course, today);
   const week = weeks.find((w) => w.week_number === weekNumber) ?? weeks[0];
 
@@ -141,7 +141,7 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
             <div className="flex items-center gap-3">
               <span
                 className="size-3 shrink-0 rounded-full ring-4"
-                style={{ backgroundColor: hex, ["--tw-ring-color" as string]: `${hex}26` }}
+                style={{ backgroundColor: hex, ["--tw-ring-color" as string]: `color-mix(in oklab, ${hex} 18%, transparent)` }}
               />
               <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-[28px]">{course.name}</h1>
             </div>

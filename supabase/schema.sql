@@ -14,7 +14,7 @@ create table if not exists public.courses (
   id            uuid primary key default gen_random_uuid(),
   user_id       uuid not null default auth.uid() references auth.users (id) on delete cascade,
   name          text not null check (char_length(trim(name)) between 1 and 80),
-  color         text not null default 'emerald',
+  color         text not null default 'blue',
   start_date    date not null,
   week_count    smallint not null default 14 check (week_count between 1 and 30),
   midterm_date  date,

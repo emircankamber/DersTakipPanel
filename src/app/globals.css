@@ -37,6 +37,16 @@
 
   --grid-line: oklch(0.2 0.006 265 / 0.05);
   --glow: oklch(0.7 0.13 163 / 0.18);
+
+  /* Ders renkleri (doğrulanmış kategorik palet) */
+  --course-blue: #2a78d6;
+  --course-orange: #eb6834;
+  --course-aqua: #1baf7a;
+  --course-yellow: #eda100;
+  --course-magenta: #e87ba4;
+  --course-green: #008300;
+  --course-violet: #6250d6;
+  --course-red: #e34948;
 }
 
 .dark {
@@ -68,6 +78,15 @@
 
   --grid-line: oklch(1 0 0 / 0.04);
   --glow: oklch(0.74 0.14 163 / 0.14);
+
+  --course-blue: #3987e5;
+  --course-orange: #d95926;
+  --course-aqua: #199e70;
+  --course-yellow: #c98500;
+  --course-magenta: #d55181;
+  --course-green: #008300;
+  --course-violet: #9085e9;
+  --course-red: #e66767;
 }
 
 @theme inline {

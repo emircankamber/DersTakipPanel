@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRightIcon, CalendarClockIcon } from "lucide-react";
 
-import { colorHex } from "@/lib/colors";
+import { courseColor } from "@/lib/colors";
 import { nextExam } from "@/lib/exams";
 import { getCurrentWeek, relativeDays, todayISO } from "@/lib/semester";
 import type { CourseBundle } from "@/lib/data";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 export function CourseCard({ course, index = 0 }: { course: CourseBundle; index?: number }) {
   const today = todayISO();
   const info = getCurrentWeek(course, today);
-  const hex = colorHex(course.color);
+  const hex = courseColor(course.color);
   const total = course.weeks.reduce((s, w) => s + w.topicsTotal, 0);
   const done = course.weeks.reduce((s, w) => s + w.topicsDone, 0);
   const exam = nextExam(course, today);
@@ -30,7 +30,7 @@ export function CourseCard({ course, index = 0 }: { course: CourseBundle; index?
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-[0.07] transition-opacity group-hover:opacity-[0.12]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-[0.08] transition-opacity group-hover:opacity-[0.14]"
           style={{ background: `linear-gradient(to bottom, ${hex}, transparent)` }}
         />
         <div className="relative flex items-start justify-between gap-3">

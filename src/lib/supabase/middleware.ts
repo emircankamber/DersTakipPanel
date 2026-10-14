@@ -1,11 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+import { isSupabaseConfigured } from "./config";
+
 const AUTH_ROUTES = ["/giris", "/kayit"];
 const PUBLIC_PREFIXES = ["/auth"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  // Yapılandırma yoksa yalnızca giriş/kayıt sayfaları açılsın (orada uyarı gösterilir).
+  if (!isSupabaseConfigured()) {
+    const { pathname } = request.nextUrl;
+    if (AUTH_ROUTES.includes(pathname)) return response;
+    const url = request.nextUrl.clone();
+    url.pathname = "/giris";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

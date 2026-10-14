@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { NOT_CONFIGURED_MESSAGE, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = {
@@ -53,6 +54,7 @@ async function siteOrigin() {
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const { email, password } = readForm(formData);
+  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED_MESSAGE, email };
   if (!EMAIL_RE.test(email)) return { error: "Geçerli bir e-posta gir.", email };
   if (!password) return { error: "Şifreni gir.", email };
 
@@ -65,6 +67,7 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
 
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const { email, password } = readForm(formData);
+  if (!isSupabaseConfigured()) return { error: NOT_CONFIGURED_MESSAGE, email };
   if (!EMAIL_RE.test(email)) return { error: "Geçerli bir e-posta gir.", email };
   if (password.length < 8) return { error: "Şifre en az 8 karakter olmalı.", email };
 

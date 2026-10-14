@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { CourseView } from "@/components/courses/course-view";
 import { getCurrentWeek } from "@/lib/semester";
 import { createClient } from "@/lib/supabase/server";
-import type { Course, Topic, Week } from "@/lib/types";
+import type { Assignment, Course, Topic, Week } from "@/lib/types";
 
 type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ hafta?: string }> };
 
@@ -45,6 +45,12 @@ export default async function CoursePage({ params, searchParams }: Params) {
         .order("created_at")
     : { data: [] };
 
+  const { data: assignmentsData } = await supabase
+    .from("assignments")
+    .select("id, course_id, kind, title, description, due_at, status, completed_at, created_at")
+    .eq("course_id", course.id)
+    .order("due_at");
+
   const requested = Number(hafta);
   const initialWeek =
     Number.isInteger(requested) && requested >= 1 && requested <= course.week_count
@@ -58,6 +64,7 @@ export default async function CoursePage({ params, searchParams }: Params) {
       weeks={weeks}
       topics={(topicsData ?? []) as Topic[]}
       initialWeek={initialWeek}
+      assignments={(assignmentsData ?? []) as Assignment[]}
     />
   );
 }

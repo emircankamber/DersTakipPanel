@@ -3,6 +3,7 @@ import { LayoutDashboardIcon } from "lucide-react";
 
 import { NewCourseButton } from "@/components/courses/new-course-button";
 import { CompletionRings } from "@/components/dashboard/completion-rings";
+import { Deadlines } from "@/components/dashboard/deadlines";
 import { ExamCountdown } from "@/components/dashboard/exam-countdown";
 import { Heatmap } from "@/components/dashboard/heatmap";
 import { LevelChart } from "@/components/dashboard/level-chart";
@@ -14,6 +15,7 @@ import { buildDashboard } from "@/lib/dashboard";
 import { loadCourseBundles } from "@/lib/data";
 import { formatLong } from "@/lib/semester";
 import { createClient } from "@/lib/supabase/server";
+import type { Assignment } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Özet" };
 
@@ -32,8 +34,18 @@ function weekSummary(data: ReturnType<typeof buildDashboard>) {
 
 export default async function PanelPage() {
   const supabase = await createClient();
-  const bundles = await loadCourseBundles(supabase);
+  const [bundles, { data: openAssignments }] = await Promise.all([
+    loadCourseBundles(supabase),
+    supabase
+      .from("assignments")
+      .select("id, course_id, kind, title, description, due_at, status, completed_at, created_at")
+      .neq("status", "done")
+      .order("due_at")
+      .limit(20),
+  ]);
   const data = buildDashboard(bundles);
+  const courseById = new Map(bundles.map((c) => [c.id, { name: c.name, color: c.color }]));
+  const deadlines = ((openAssignments ?? []) as Assignment[]).map((a) => ({ ...a, course: courseById.get(a.course_id) }));
   const summary = weekSummary(data);
 
   if (data.courses.length === 0) {
@@ -76,9 +88,12 @@ export default async function PanelPage() {
         <div className="grid gap-4 lg:grid-cols-3">
           <Heatmap courses={data.courses} maxWeeks={data.maxWeeks} />
         </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <ReviewList items={data.review} />
+        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          <Deadlines items={deadlines} today={data.today} />
           <ExamCountdown exams={data.exams} />
+          <div className="lg:col-span-2 xl:col-span-1">
+            <ReviewList items={data.review} />
+          </div>
         </div>
       </div>
     </>

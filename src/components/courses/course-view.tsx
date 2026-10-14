@@ -37,7 +37,8 @@ import {
 import { courseColor } from "@/lib/colors";
 import { upcomingExams } from "@/lib/exams";
 import { formatRange, formatShort, getCurrentWeek, relativeDays, todayISO } from "@/lib/semester";
-import type { Course, Topic, Week } from "@/lib/types";
+import { AssignmentManager } from "@/components/assignments/assignment-manager";
+import type { Assignment, Course, Topic, Week } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CourseFormDialog } from "./course-form-dialog";
 import { LevelCard } from "./level-card";
@@ -49,9 +50,10 @@ type Props = {
   weeks: Week[];
   topics: Topic[];
   initialWeek: number;
+  assignments: Assignment[];
 };
 
-export function CourseView({ course, weeks: initialWeeks, topics: initialTopics, initialWeek }: Props) {
+export function CourseView({ course, weeks: initialWeeks, topics: initialTopics, initialWeek, assignments }: Props) {
   const [weekNumber, setWeekNumber] = React.useState(initialWeek);
   const [direction, setDirection] = React.useState(0);
   const [levels, setLevels] = React.useState<Record<string, number>>(() =>
@@ -256,6 +258,15 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
           onLocalChange={(v) => setLevels((s) => ({ ...s, [week.id]: v }))}
         />
       </motion.div>
+
+      <div className="mt-4">
+        <AssignmentManager
+          initial={assignments}
+          courses={[{ id: course.id, name: course.name, color: course.color }]}
+          courseId={course.id}
+          title="Bu dersin ödev ve projeleri"
+        />
+      </div>
 
       <CourseFormDialog open={editOpen} onOpenChange={setEditOpen} course={course} />
 

@@ -31,3 +31,18 @@ export type Topic = {
 };
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
+
+export type AssignmentKind = "odev" | "proje";
+export type AssignmentStatus = "todo" | "in_progress" | "done";
+
+export type Assignment = {
+  id: string;
+  course_id: string;
+  kind: AssignmentKind;
+  title: string;
+  description: string | null;
+  due_at: string; // ISO timestamptz
+  status: AssignmentStatus;
+  completed_at: string | null;
+  created_at: string;
+};

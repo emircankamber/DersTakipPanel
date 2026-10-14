@@ -31,19 +31,13 @@ export function ReviewList({ items }: { items: ReviewItem[] }) {
                 >
                   <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: courseColor(r.color) }} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="truncate text-sm">{r.courseName}</span>
-                      <span className="shrink-0 text-xs text-muted-foreground tabular">
-                        {r.week}. hafta{r.isCurrent && " · bu hafta"}
-                      </span>
+                    <div className="truncate text-sm">{r.courseName}</div>
+                    <div className="truncate text-xs text-muted-foreground tabular">
+                      {r.week}. hafta{r.isCurrent && " · bu hafta"}
+                      {r.topicsTotal > 0 && ` · ${r.topicsDone}/${r.topicsTotal} konu`}
                     </div>
-                    {r.topicsTotal > 0 && (
-                      <div className="text-xs text-muted-foreground tabular">
-                        {r.topicsDone}/{r.topicsTotal} konu işaretli
-                      </div>
-                    )}
                   </div>
-                  <div className="flex w-24 shrink-0 items-center gap-2 sm:w-32">
+                  <div className="flex w-20 shrink-0 items-center gap-2 sm:w-24">
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                       <div className="h-full rounded-full bg-warning" style={{ width: `${Math.max(r.level, 2)}%` }} />
                     </div>

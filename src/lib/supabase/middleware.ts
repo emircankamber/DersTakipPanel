@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "./config";
 
 const AUTH_ROUTES = ["/giris", "/kayit"];
-const PUBLIC_PREFIXES = ["/auth"];
+const PUBLIC_PREFIXES = ["/auth", "/api/cron"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

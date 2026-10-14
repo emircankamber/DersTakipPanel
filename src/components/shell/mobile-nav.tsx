@@ -29,7 +29,7 @@ export function MobileNav({ email }: NavProps) {
         aria-label="Alt menü"
         className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
       >
-        <div className="mx-auto grid max-w-sm grid-cols-2 gap-1 p-1.5">
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-1 p-1.5">
           {NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;

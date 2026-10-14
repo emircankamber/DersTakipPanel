@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-import { isSupabaseConfigured } from "./config";
+import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "./config";
 
 const AUTH_ROUTES = ["/giris", "/kayit"];
 const PUBLIC_PREFIXES = ["/auth"];
@@ -20,8 +20,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl(),
+    supabaseKey(),
     {
       cookies: {
         getAll() {

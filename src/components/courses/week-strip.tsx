@@ -53,20 +53,20 @@ export function WeekStrip({
                   data-week={w.week_number}
                   onClick={() => onSelect(w.week_number)}
                   className={cn(
-                    "group relative flex h-16 w-12 shrink-0 snap-center flex-col items-center justify-between rounded-lg border px-1 pt-2 pb-2 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/40 sm:w-[52px]",
-                    active ? "border-foreground/20 bg-accent" : "bg-card hover:bg-accent/60",
+                    "group relative flex h-[72px] w-12 shrink-0 snap-center flex-col items-center justify-between rounded-xl border px-1 pt-3 pb-3 outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/40 sm:w-14",
+                    active ? "border-border-strong bg-card shadow-[inset_0_1px_0_var(--highlight),0_8px_20px_-12px_var(--shadow)]" : "bg-card/50 hover:bg-card",
                   )}
                 >
                   {active && (
                     <motion.span
                       layoutId="week-active"
-                      className="absolute inset-0 rounded-lg border border-foreground/25"
+                      className="absolute inset-0 rounded-xl border border-foreground/30"
                       transition={{ type: "spring", stiffness: 500, damping: 38 }}
                     />
                   )}
                   <span
                     className={cn(
-                      "tabular relative text-[13px] font-medium",
+                      "relative font-display text-xl leading-none tabular",
                       active ? "text-foreground" : future ? "text-muted-foreground/60" : "text-muted-foreground",
                     )}
                   >

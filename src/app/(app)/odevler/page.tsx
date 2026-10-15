@@ -24,7 +24,15 @@ export default async function OdevlerPage() {
 
   return (
     <>
-      <PageHeader title="Ödevler" description="Ödev ve projelerini derslere göre takip et, teslim tarihlerini kaçırma." />
+      <PageHeader
+        eyebrow="Ajanda"
+        title={
+          <>
+            Ödevler <em>ve projeler</em>
+          </>
+        }
+        description="Son teslim tarihine göre sıralı. Bir işi bitirince yuvarlağa dokun."
+      />
       <AssignmentManager
         initial={(assignments ?? []) as Assignment[]}
         courses={courses ?? []}

@@ -17,17 +17,17 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section aria-labelledby={id} className={cn("flex min-w-0 flex-col rounded-xl border bg-card", className)}>
-      <header className="flex items-start justify-between gap-4 px-5 pt-5">
+    <section aria-labelledby={id} className={cn("flex min-w-0 flex-col surface", className)}>
+      <header className="flex items-start justify-between gap-4 px-6 pt-6">
         <div className="min-w-0">
-          <h2 id={id} className="text-sm font-medium tracking-tight">
+          <h2 id={id} className="font-display text-[22px] leading-tight">
             {title}
           </h2>
-          {description && <p className="mt-0.5 text-[13px] text-muted-foreground">{description}</p>}
+          {description && <p className="mt-1 text-[13px] text-muted-foreground">{description}</p>}
         </div>
         {action}
       </header>
-      <div className="flex min-h-0 flex-1 flex-col p-5">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col p-6">{children}</div>
     </section>
   );
 }

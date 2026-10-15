@@ -61,7 +61,7 @@ export function Heatmap({ courses, maxWeeks }: { courses: DashboardCourse[]; max
             <div key={c.id} className="contents" role="row">
               <Link
                 href={`/dersler/${c.id}`}
-                className="sticky left-0 z-10 flex min-w-0 items-center gap-2 bg-card pr-3 text-xs hover:text-foreground"
+                className="sticky left-0 z-10 flex min-w-0 items-center gap-2 bg-card pr-3 text-xs hover:text-foreground sm:static sm:bg-transparent"
                 role="rowheader"
               >
                 <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: courseColor(c.color) }} />

@@ -1,6 +1,6 @@
 import { ClipboardListIcon, LayoutDashboardIcon, LibraryBigIcon, type LucideIcon } from "lucide-react";
 
-export type NavCourse = { id: string; name: string; color: string };
+export type NavCourse = { id: string; name: string; color: string; start_date: string; week_count: number };
 export type NavProps = { email: string; courses: NavCourse[] };
 
 export const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [

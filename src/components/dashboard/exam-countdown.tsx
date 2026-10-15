@@ -30,10 +30,10 @@ export function ExamCountdown({ exams }: { exams: ExamItem[] }) {
               <li key={`${e.courseId}-${e.label}`}>
                 <Link
                   href={`/dersler/${e.courseId}`}
-                  className="group flex items-center gap-4 rounded-lg border px-4 py-3 transition-colors hover:bg-accent/50"
+                  className="group flex items-center gap-4 rounded-xl border px-4 py-4 transition-colors hover:border-border-strong hover:bg-accent/40"
                 >
                   <div className="w-14 shrink-0 text-center">
-                    <div className={cn("text-2xl leading-none font-semibold tracking-tight tabular", urgent && "text-warning")}>
+                    <div className={cn("font-display text-4xl leading-none tabular", urgent && "text-warning")}>
                       {e.days}
                     </div>
                     <div className="mt-1 text-[11px] text-muted-foreground">{e.days === 0 ? "bugün" : "gün"}</div>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowLeftIcon,
-  CalendarClockIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   EllipsisIcon,
@@ -81,6 +80,10 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
   const hex = courseColor(course.color);
   const exams = upcomingExams(course, today);
   const week = weeks.find((w) => w.week_number === weekNumber) ?? weeks[0];
+  const elapsed = info.status === "upcoming" ? 0 : info.status === "finished" ? weeks.length : info.week;
+  const pastLevels = weeks.slice(0, elapsed).map((w) => levels[w.id] ?? 0);
+  const courseAvg = pastLevels.length ? Math.round(pastLevels.reduce((a, b) => a + b, 0) / pastLevels.length) : null;
+  const topicsDone = topics.filter((t) => t.done).length;
 
   const weekStats = React.useMemo(() => {
     const map: Record<string, { total: number; done: number }> = {};
@@ -129,44 +132,21 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
 
   return (
     <div>
-      {/* Başlık */}
-      <div className="mb-8 sm:mb-10">
-        <Link
-          href="/dersler"
-          className="mb-4 inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeftIcon className="size-3.5" />
-          Dersler
-        </Link>
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-3">
-              <span
-                className="size-3 shrink-0 rounded-full ring-4"
-                style={{ backgroundColor: hex, ["--tw-ring-color" as string]: `color-mix(in oklab, ${hex} 18%, transparent)` }}
-              />
-              <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-[28px]">{course.name}</h1>
-            </div>
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-muted-foreground">
-              <span>
-                {info.status === "upcoming" && `Dönem ${relativeDays(info.daysToStart).toLocaleLowerCase("tr-TR")} başlıyor`}
-                {info.status === "active" && (
-                  <>
-                    Şu an <span className="tabular font-medium text-foreground">{info.week}. hafta</span>
-                    <span className="tabular"> / {course.week_count}</span>
-                  </>
-                )}
-                {info.status === "finished" && "Dönem tamamlandı"}
-              </span>
-              {exams.map((e) => (
-                <span key={e.label} className={cn("flex items-center gap-1.5", e.days <= 7 && "text-warning")}>
-                  <CalendarClockIcon className="size-3.5" />
-                  {e.label} {formatShort(e.date)} · {relativeDays(e.days).toLocaleLowerCase("tr-TR")}
-                </span>
-              ))}
-            </div>
-          </div>
-
+      {/* Başlık bandı — dersin rengiyle */}
+      <section className="surface noise relative mb-8 overflow-hidden p-6 sm:mb-12 sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-32 -left-16 h-72 w-[60%] rounded-full opacity-25 blur-3xl"
+          style={{ background: `radial-gradient(ellipse, ${hex}, transparent 70%)` }}
+        />
+        <div className="relative flex items-center justify-between gap-4">
+          <Link
+            href="/dersler"
+            className="inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeftIcon className="size-3.5" />
+            Dersler
+          </Link>
           <div className="flex shrink-0 items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="hidden sm:inline-flex">
               <PencilIcon />
@@ -192,7 +172,64 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
             </DropdownMenu>
           </div>
         </div>
-      </div>
+
+        <div className="relative mt-8">
+          <p className="eyebrow flex items-center gap-2">
+            <span className="size-2 rounded-full" style={{ backgroundColor: hex }} />
+            {info.status === "upcoming" && `Dönem ${relativeDays(info.daysToStart).toLocaleLowerCase("tr-TR")} başlıyor`}
+            {info.status === "active" && `Şu an ${info.week}. hafta · ${formatRange(course.start_date, info.week)}`}
+            {info.status === "finished" && "Dönem tamamlandı"}
+          </p>
+          <h1 className="mt-3 font-display text-[40px] leading-[1.05] sm:text-6xl">{course.name}</h1>
+        </div>
+
+        <dl className="relative mt-8 grid grid-cols-2 gap-x-6 gap-y-6 border-t pt-6 sm:grid-cols-4">
+          <div>
+            <dt className="text-xs text-muted-foreground">Ortalama seviye</dt>
+            <dd className="mt-2 font-display text-4xl leading-none tabular">
+              {courseAvg ?? "—"}
+              {courseAvg !== null && <span className="ml-1 font-sans text-sm text-muted-foreground">/100</span>}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">Konular</dt>
+            <dd className="mt-2 font-display text-4xl leading-none tabular">
+              {topicsDone}
+              <span className="ml-1 font-sans text-sm text-muted-foreground">/ {topics.length}</span>
+            </dd>
+          </div>
+          {(["Vize", "Final"] as const).map((label) => {
+            const e = exams.find((x) => x.label === label);
+            const date = label === "Vize" ? course.midterm_date : course.final_date;
+            return (
+              <div key={label}>
+                <dt className="text-xs text-muted-foreground">
+                  {label}
+                  {date && <span className="ml-1 text-muted-foreground/70">· {formatShort(date)}</span>}
+                </dt>
+                <dd className={cn("mt-2 font-display text-4xl leading-none tabular", e && e.days <= 7 && "text-warning")}>
+                  {e ? (
+                    <>
+                      {e.days}
+                      <span className="ml-1 font-sans text-sm text-muted-foreground">{e.days === 0 ? "bugün" : "gün"}</span>
+                    </>
+                  ) : date ? (
+                    <span className="text-muted-foreground">Geçti</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setEditOpen(true)}
+                      className="font-sans text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                      Tarih ekle
+                    </button>
+                  )}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+      </section>
 
       <WeekStrip
         weeks={weeks}
@@ -207,7 +244,7 @@ export function CourseView({ course, weeks: initialWeeks, topics: initialTopics,
       <div className="mt-8 mb-5 flex items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-lg font-semibold tracking-tight tabular">{week.week_number}. Hafta</h2>
+            <h2 className="font-display text-3xl leading-none tabular">{week.week_number}. hafta</h2>
             {isCurrent && (
               <span className="rounded-full border border-brand/30 bg-brand-soft px-2 py-0.5 text-[11px] font-medium text-brand">
                 Bu hafta

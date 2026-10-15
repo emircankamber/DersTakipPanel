@@ -1,89 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRightIcon, CalendarClockIcon } from "lucide-react";
+import { ArrowUpRightIcon } from "lucide-react";
 
 import { FadeIn } from "@/components/fade-in";
 import { courseColor } from "@/lib/colors";
-import { nextExam } from "@/lib/exams";
-import { getCurrentWeek, relativeDays, todayISO } from "@/lib/semester";
 import type { CourseBundle } from "@/lib/data";
+import { nextExam } from "@/lib/exams";
+import { getCurrentWeek, todayISO } from "@/lib/semester";
 import { cn } from "@/lib/utils";
 
 export function CourseCard({ course, index = 0 }: { course: CourseBundle; index?: number }) {
   const today = todayISO();
   const info = getCurrentWeek(course, today);
-  const hex = courseColor(course.color);
+  const color = courseColor(course.color);
   const total = course.weeks.reduce((s, w) => s + w.topicsTotal, 0);
   const done = course.weeks.reduce((s, w) => s + w.topicsDone, 0);
   const exam = nextExam(course, today);
+  const elapsed = info.status === "upcoming" ? 0 : info.status === "finished" ? course.week_count : info.week;
+  const past = course.weeks.slice(0, elapsed);
+  const avg = past.length ? Math.round(past.reduce((s, w) => s + w.level, 0) / past.length) : null;
 
   return (
-    <FadeIn delay={index * 0.04}>
+    <FadeIn delay={index * 0.05}>
       <Link
         href={`/dersler/${course.id}`}
-        className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card p-5 outline-none transition-[border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-lg hover:shadow-black/[0.04] focus-visible:ring-[3px] focus-visible:ring-ring/40"
+        className="surface surface-interactive group relative flex h-full flex-col overflow-hidden p-6 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40"
       >
+        {/* Dersin rengiyle köşeden yayılan hafif ışık */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 opacity-[0.08] transition-opacity group-hover:opacity-[0.14]"
-          style={{ background: `linear-gradient(to bottom, ${hex}, transparent)` }}
+          className="pointer-events-none absolute -top-20 -right-20 size-56 rounded-full opacity-30 blur-3xl transition-opacity duration-300 group-hover:opacity-50"
+          style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }}
         />
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: hex }} />
-            <h3 className="truncate font-medium tracking-tight">{course.name}</h3>
-          </div>
-          <ArrowUpRightIcon className="size-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+
+        <div className="relative flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            <span className="size-2 rounded-full" style={{ backgroundColor: color }} />
+            <span className="eyebrow">
+              {info.status === "upcoming" && `${info.daysToStart} gün sonra`}
+              {info.status === "active" && `Hafta ${info.week} / ${course.week_count}`}
+              {info.status === "finished" && "Tamamlandı"}
+            </span>
+          </span>
+          <ArrowUpRightIcon className="size-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
         </div>
 
-        <p className="relative mt-1 text-[13px] text-muted-foreground">
-          {info.status === "upcoming" && `${info.daysToStart} gün sonra başlıyor`}
-          {info.status === "active" && (
-            <>
-              <span className="tabular text-foreground/90">Hafta {info.week}</span> / {course.week_count}
-            </>
-          )}
-          {info.status === "finished" && "Dönem tamamlandı"}
-        </p>
+        <h3 className="relative mt-4 line-clamp-2 font-display text-[28px] leading-[1.1]">{course.name}</h3>
 
-        {/* Haftalık seviye mini grafiği */}
-        <div className="relative mt-5 flex h-12 items-end gap-[3px]" aria-hidden>
+        {/* Haftalık seviye — her çubuk bir hafta */}
+        <div className="relative mt-8 flex h-16 items-end gap-1" aria-hidden>
           {course.weeks.map((w) => {
             const isCurrent = info.status === "active" && w.week_number === info.week;
-            const past = info.status === "finished" || (info.status === "active" && w.week_number <= info.week);
+            const isPast = w.week_number <= elapsed;
             return (
               <div key={w.id} className="relative flex h-full flex-1 items-end">
-                <div className="absolute inset-0 rounded-[2px] bg-muted/60" />
-                <div
-                  className={cn("relative w-full rounded-[2px] transition-[height]", !past && "opacity-40")}
-                  style={{ height: `${Math.max(w.level, 4)}%`, backgroundColor: w.level > 0 ? hex : "transparent" }}
-                />
-                {isCurrent && (
-                  <div className="absolute -bottom-2 left-1/2 size-1 -translate-x-1/2 rounded-full bg-foreground/70" />
+                <div className={cn("absolute inset-0 rounded-[3px]", isPast ? "bg-foreground/[0.06]" : "border border-dashed border-foreground/10")} />
+                {w.level > 0 && (
+                  <div
+                    className={cn("relative w-full rounded-[3px]", !isPast && "opacity-40")}
+                    style={{ height: `${Math.max(w.level, 6)}%`, backgroundColor: color }}
+                  />
                 )}
+                {isCurrent && <div className="absolute -bottom-2.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-foreground" />}
               </div>
             );
           })}
         </div>
 
-        <div className="relative mt-6 flex items-center justify-between border-t pt-4 text-[13px] text-muted-foreground">
-          <span className="tabular">
-            {total === 0 ? "Konu yok" : (
-              <>
-                <span className="text-foreground/90">{done}</span>/{total} konu
-              </>
-            )}
-          </span>
-          {exam ? (
-            <span className={cn("flex items-center gap-1.5", exam.days <= 7 && "text-warning")}>
-              <CalendarClockIcon className="size-3.5" />
-              {exam.label} · {relativeDays(exam.days).toLocaleLowerCase("tr-TR")}
-            </span>
-          ) : (
-            <span className="text-muted-foreground/60">Sınav tarihi yok</span>
-          )}
-        </div>
+        <dl className="relative mt-8 grid grid-cols-3 gap-4 border-t pt-4">
+          <div>
+            <dt className="text-[11px] text-muted-foreground">Ortalama</dt>
+            <dd className="mt-1 font-display text-2xl leading-none tabular">{avg ?? "—"}</dd>
+          </div>
+          <div>
+            <dt className="text-[11px] text-muted-foreground">Konu</dt>
+            <dd className="mt-1 font-display text-2xl leading-none tabular">
+              {done}
+              <span className="text-base text-muted-foreground">/{total}</span>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-[11px] text-muted-foreground">{exam ? exam.label : "Sınav"}</dt>
+            <dd className={cn("mt-1 font-display text-2xl leading-none tabular", exam && exam.days <= 7 && "text-warning")}>
+              {exam ? (
+                <>
+                  {exam.days}
+                  <span className="ml-1 font-sans text-xs text-muted-foreground">gün</span>
+                </>
+              ) : (
+                "—"
+              )}
+            </dd>
+          </div>
+        </dl>
       </Link>
     </FadeIn>
   );

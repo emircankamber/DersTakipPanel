@@ -85,9 +85,9 @@ export function LevelCard({
   const needsReview = level < REVIEW_THRESHOLD;
 
   return (
-    <section className="rounded-xl border bg-card p-5" aria-labelledby="level-title">
+    <section className="surface p-6" aria-labelledby="level-title">
       <div className="flex items-center justify-between">
-        <h3 id="level-title" className="text-sm font-medium">
+        <h3 id="level-title" className="font-display text-[22px] leading-tight">
           Öğrenme seviyesi
         </h3>
         <AnimatePresence mode="wait">
@@ -112,7 +112,7 @@ export function LevelCard({
 
       <div className="mt-6 flex items-end justify-between">
         <div className="flex items-baseline gap-1">
-          <span className="tabular text-5xl font-semibold tracking-tight">
+          <span className="font-display text-7xl leading-none tabular">
             <AnimatedNumber value={level} />
           </span>
           <span className="text-lg text-muted-foreground">/100</span>

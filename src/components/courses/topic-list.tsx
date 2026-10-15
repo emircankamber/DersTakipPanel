@@ -186,10 +186,10 @@ export function TopicList({
   }
 
   return (
-    <section className="rounded-xl border bg-card" aria-labelledby="topics-title">
-      <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
+    <section className="surface" aria-labelledby="topics-title">
+      <div className="flex items-center justify-between gap-4 px-6 pt-6 pb-4">
         <div>
-          <h3 id="topics-title" className="text-sm font-medium">
+          <h3 id="topics-title" className="font-display text-[22px] leading-tight">
             Konular
           </h3>
           <p className="mt-0.5 text-[13px] text-muted-foreground tabular">
@@ -211,7 +211,7 @@ export function TopicList({
         )}
       </div>
 
-      <div className="px-3">
+      <div className="px-4">
         {topics.length === 0 ? (
           <div className="mx-2 mb-1 flex flex-col items-center rounded-lg border border-dashed px-4 py-10 text-center">
             <div className="mb-3 flex size-10 items-center justify-center rounded-lg border bg-background">
@@ -233,7 +233,7 @@ export function TopicList({
         )}
       </div>
 
-      <form onSubmit={submit} className="p-3 pt-2">
+      <form onSubmit={submit} className="p-4 pt-2">
         <label className="group flex h-11 items-center gap-3 rounded-lg border border-transparent px-2 transition-colors focus-within:border-input focus-within:bg-background hover:bg-accent/40 focus-within:hover:bg-background">
           <PlusIcon className="size-[18px] shrink-0 text-muted-foreground" />
           <input

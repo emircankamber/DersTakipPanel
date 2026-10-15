@@ -80,3 +80,18 @@ export function urgency(a: Pick<Assignment, "due_at" | "status">, today = todayI
 export function sortByDue(a: Assignment, b: Assignment) {
   return a.due_at.localeCompare(b.due_at);
 }
+
+const dayFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: TIME_ZONE, day: "numeric" });
+const monFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: TIME_ZONE, month: "short" });
+const wdFmt = new Intl.DateTimeFormat("tr-TR", { timeZone: TIME_ZONE, weekday: "short" });
+
+/** Ajanda sütunu için: { day: "15", month: "Eki", weekday: "Per", time: "23:59" } */
+export function dueParts(dueAt: string) {
+  const d = new Date(dueAt);
+  return {
+    day: dayFmt.format(d),
+    month: monFmt.format(d),
+    weekday: wdFmt.format(d),
+    time: splitDueAt(dueAt).time,
+  };
+}

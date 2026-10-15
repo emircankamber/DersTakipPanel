@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -8,6 +8,13 @@ import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin", "latin-ext"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin", "latin-ext"],
 });
 
@@ -27,8 +34,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0d0e11" },
-    { media: "(prefers-color-scheme: light)", color: "#fbfbfc" },
+    { media: "(prefers-color-scheme: dark)", color: "#12110f" },
+    { media: "(prefers-color-scheme: light)", color: "#f8f6f1" },
   ],
 };
 
@@ -37,7 +44,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

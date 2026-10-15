@@ -22,7 +22,7 @@ type Mode = "giris" | "kayit";
 
 const COPY: Record<Mode, { title: string; subtitle: string; cta: string; alt: string; altLink: string; altHref: string }> = {
   giris: {
-    title: "Tekrar hoş geldin",
+    title: "Tekrar hoş geldin.",
     subtitle: "Bu haftanın derslerine kaldığın yerden devam et.",
     cta: "Giriş yap",
     alt: "Hesabın yok mu?",
@@ -30,7 +30,7 @@ const COPY: Record<Mode, { title: string; subtitle: string; cta: string; alt: st
     altHref: "/kayit",
   },
   kayit: {
-    title: "Dönemini planla",
+    title: "Dönemini planla.",
     subtitle: "Derslerini ekle, her haftayı konu konu takip et.",
     cta: "Hesap oluştur",
     alt: "Zaten hesabın var mı?",
@@ -49,10 +49,11 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
   const copy = COPY[mode];
 
   return (
-    <FadeIn className="w-full max-w-[380px]">
-      <div className="mb-8 space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">{copy.title}</h1>
-        <p className="text-sm text-muted-foreground">{copy.subtitle}</p>
+    <FadeIn className="w-full max-w-sm">
+      <div className="mb-10">
+        <p className="eyebrow">{mode === "giris" ? "Giriş" : "Yeni hesap"}</p>
+        <h1 className="mt-3 font-display text-[44px] leading-[1.05]">{copy.title}</h1>
+        <p className="mt-3 text-[15px] text-muted-foreground">{copy.subtitle}</p>
       </div>
 
       <AnimatePresence mode="wait">
@@ -61,7 +62,7 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
             key="info"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-xl border bg-card p-6"
+            className="surface p-6"
           >
             <div className="mb-4 flex size-10 items-center justify-center rounded-lg border bg-brand-soft text-brand">
               <MailCheckIcon className="size-5" />
@@ -93,7 +94,7 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
                 defaultValue={state.email}
                 required
                 autoFocus
-                className="h-10"
+                className="h-11"
               />
             </div>
             <div className="space-y-2">
@@ -112,12 +113,12 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
                   placeholder="••••••••"
                   required
                   minLength={mode === "kayit" ? 8 : undefined}
-                  className="h-10 pr-10"
+                  className="h-11 pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-foreground"
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:text-foreground"
                   aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
                 >
                   {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
@@ -141,7 +142,7 @@ export function AuthForm({ mode, initialError }: { mode: Mode; initialError?: st
               )}
             </AnimatePresence>
 
-            <Button type="submit" size="lg" className="group w-full" disabled={pending}>
+            <Button type="submit" size="lg" className="group h-11 w-full" disabled={pending}>
               {pending ? (
                 <Loader2Icon className="animate-spin" />
               ) : (

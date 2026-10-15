@@ -30,7 +30,8 @@ import {
   STATUS_LABEL,
   STATUS_ORDER,
   dueLabel,
-  formatDue,
+  dueParts,
+  splitDueAt,
   sortByDue,
   urgency,
   type Urgency,
@@ -98,6 +99,7 @@ function Row({
   a,
   course,
   showCourse,
+  showDate,
   today,
   onStatus,
   onEdit,
@@ -106,6 +108,7 @@ function Row({
   a: Assignment;
   course?: CourseOption;
   showCourse: boolean;
+  showDate: boolean;
   today: string;
   onStatus: (s: AssignmentStatus) => void;
   onEdit: () => void;
@@ -113,85 +116,100 @@ function Row({
 }) {
   const u = urgency(a, today);
   const done = a.status === "done";
+  const p = dueParts(a.due_at);
   return (
     <motion.li
       layout
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden"
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      className={cn("overflow-hidden", showDate && "[&:not(:first-child)]:border-t")}
     >
-      <div className="group flex items-start gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-accent/40">
-        <div className="pt-0.5">
-          <DoneToggle a={a} onToggle={() => onStatus(done ? "todo" : "done")} />
-        </div>
-        <button type="button" onClick={onEdit} className="min-w-0 flex-1 text-left">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className={cn("text-sm font-medium break-words", done && "text-muted-foreground line-through decoration-foreground/30")}>
-              {a.title}
-            </span>
-            <span
-              className={cn(
-                "rounded border px-1.5 py-px text-[10px] font-medium tracking-wide uppercase",
-                a.kind === "proje" ? "border-foreground/20 text-foreground/80" : "text-muted-foreground",
-              )}
-            >
-              {KIND_LABEL[a.kind]}
-            </span>
-            {a.status === "in_progress" && (
-              <span className="text-[11px] font-medium text-brand">{STATUS_LABEL.in_progress}</span>
-            )}
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-            {showCourse && course && (
-              <span className="flex min-w-0 items-center gap-1.5">
-                <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: courseColor(course.color) }} />
-                <span className="truncate">{course.name}</span>
-              </span>
-            )}
-            <span className="tabular">{formatDue(a.due_at)}</span>
-          </div>
-          {a.description && (
-            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground/90">{a.description}</p>
+      <div className="grid grid-cols-[48px_1fr] gap-4 sm:grid-cols-[64px_1fr] sm:gap-6">
+        {/* Ajanda tarih sütunu — aynı güne düşen işlerde yalnızca ilkinde görünür */}
+        <div className="pt-4 text-center">
+          {showDate && (
+            <>
+              <div className={cn("font-display text-[32px] leading-none tabular", done && "text-muted-foreground")}>{p.day}</div>
+              <div className="mt-1 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+                {p.month} · {p.weekday}
+              </div>
+            </>
           )}
-        </button>
-        <div className="flex shrink-0 items-center gap-1">
-          <span className={cn("hidden text-xs font-medium tabular sm:inline", DUE_TONE[u])}>{dueLabel(a, today)}</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm" aria-label={`${a.title} seçenekleri`} className="text-muted-foreground">
-                <EllipsisIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>Durum</DropdownMenuLabel>
-              {STATUS_ORDER.map((s) => (
-                <DropdownMenuItem key={s} onSelect={() => onStatus(s)} className={cn(a.status === s && "font-medium")}>
-                  {s === "done" ? (
-                    <span className="flex size-4 items-center justify-center">
-                      <span className="size-3 rounded-full bg-brand" />
-                    </span>
-                  ) : (
-                    <StatusIcon status={s} />
-                  )}
-                  {STATUS_LABEL[s]}
+        </div>
+
+        <div className="group relative flex min-w-0 items-start gap-3 rounded-xl py-4 pr-2 pl-4 transition-colors hover:bg-accent/40">
+          <span
+            aria-hidden
+            className={cn("absolute top-4 bottom-4 left-0 w-[3px] rounded-full", done && "opacity-30")}
+            style={{ backgroundColor: courseColor(course?.color ?? "") }}
+          />
+          <div className="pt-0.5">
+            <DoneToggle a={a} onToggle={() => onStatus(done ? "todo" : "done")} />
+          </div>
+          <button type="button" onClick={onEdit} className="min-w-0 flex-1 text-left">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className={cn("text-[15px] font-medium break-words", done && "text-muted-foreground line-through decoration-foreground/30")}>
+                {a.title}
+              </span>
+              <span
+                className={cn(
+                  "rounded-full border px-2 py-px font-mono text-[10px] tracking-wider uppercase",
+                  a.kind === "proje" ? "border-border-strong text-foreground/80" : "text-muted-foreground",
+                )}
+              >
+                {KIND_LABEL[a.kind]}
+              </span>
+              {a.status === "in_progress" && (
+                <span className="rounded-full bg-brand-soft px-2 py-px text-[11px] font-medium text-brand">{STATUS_LABEL.in_progress}</span>
+              )}
+            </div>
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              {showCourse && course && <span className="truncate">{course.name}</span>}
+              <span className="font-mono tabular">{p.time}</span>
+              <span className={cn("font-medium sm:hidden", DUE_TONE[u])}>{dueLabel(a, today)}</span>
+            </div>
+            {a.description && (
+              <p className="mt-2 line-clamp-2 max-w-prose text-[13px] leading-relaxed text-muted-foreground">{a.description}</p>
+            )}
+          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className={cn("hidden text-xs font-medium tabular sm:inline", DUE_TONE[u])}>{dueLabel(a, today)}</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm" aria-label={`${a.title} seçenekleri`} className="text-muted-foreground">
+                  <EllipsisIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>Durum</DropdownMenuLabel>
+                {STATUS_ORDER.map((s) => (
+                  <DropdownMenuItem key={s} onSelect={() => onStatus(s)} className={cn(a.status === s && "font-medium")}>
+                    {s === "done" ? (
+                      <span className="flex size-4 items-center justify-center">
+                        <span className="size-3 rounded-full bg-brand" />
+                      </span>
+                    ) : (
+                      <StatusIcon status={s} />
+                    )}
+                    {STATUS_LABEL[s]}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={onEdit}>
+                  <PencilIcon />
+                  Düzenle
                 </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={onEdit}>
-                <PencilIcon />
-                Düzenle
-              </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive" onSelect={onDelete}>
-                <Trash2Icon />
-                Sil
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem variant="destructive" onSelect={onDelete}>
+                  <Trash2Icon />
+                  Sil
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
-      <p className={cn("-mt-2 mb-1 pl-[38px] text-xs font-medium tabular sm:hidden", DUE_TONE[u])}>{dueLabel(a, today)}</p>
     </motion.li>
   );
 }
@@ -266,11 +284,11 @@ export function AssignmentManager({ initial, courses, courseId, filters = false,
   const openCount = visible.length - doneCount;
 
   return (
-    <section className="rounded-xl border bg-card" aria-label={title ?? "Ödev ve projeler"}>
-      <header className="flex flex-col gap-3 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between">
+    <section className="surface" aria-label={title ?? "Ödev ve projeler"}>
+      <header className="flex flex-col gap-4 px-6 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-sm font-medium">{title ?? "Ödev ve projeler"}</h2>
-          <p className="mt-0.5 text-[13px] text-muted-foreground tabular">
+          <h2 className="font-display text-[22px] leading-tight">{title ?? "Ödev ve projeler"}</h2>
+          <p className="mt-1 text-[13px] text-muted-foreground tabular">
             {visible.length === 0 ? "Kayıt yok" : `${openCount} açık · ${doneCount} tamamlandı`}
           </p>
         </div>
@@ -284,7 +302,7 @@ export function AssignmentManager({ initial, courses, courseId, filters = false,
       </header>
 
       {filters && !noCourses && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 px-5">
+        <div className="mt-6 flex flex-wrap items-center gap-2 px-6">
           <div className="flex rounded-lg border bg-muted/40 p-0.5" role="tablist" aria-label="Tür filtresi">
             {(["all", "odev", "proje"] as const).map((k) => (
               <button
@@ -331,7 +349,7 @@ export function AssignmentManager({ initial, courses, courseId, filters = false,
         </div>
       )}
 
-      <div className="px-3 pt-2 pb-3">
+      <div className="px-4 pt-2 pb-4 sm:px-6 sm:pb-6">
         {noCourses ? (
           <div className="m-2 flex flex-col items-center rounded-lg border border-dashed px-4 py-10 text-center">
             <ClipboardListIcon className="size-5 text-muted-foreground" strokeWidth={1.5} />
@@ -361,21 +379,26 @@ export function AssignmentManager({ initial, courses, courseId, filters = false,
           </div>
         ) : (
           grouped.map((g) => (
-            <div key={g.key} className="mt-2 first:mt-0">
-              <h3
-                className={cn(
-                  "px-2 pt-2 pb-1 text-[11px] font-medium tracking-wide uppercase",
-                  g.key === "overdue" ? "text-destructive" : g.key === "soon" ? "text-warning" : "text-muted-foreground/80",
-                )}
-              >
-                {g.title} <span className="tabular">· {g.items.length}</span>
+            <div key={g.key} className="mt-4 first:mt-0">
+              <h3 className="flex items-center gap-3 px-2 pt-4 pb-2">
+                <span
+                  className={cn(
+                    "eyebrow",
+                    g.key === "overdue" ? "!text-destructive" : g.key === "soon" ? "!text-warning" : "",
+                  )}
+                >
+                  {g.title}
+                </span>
+                <span className="h-px flex-1 bg-border" />
+                <span className="font-mono text-[11px] text-muted-foreground tabular">{g.items.length}</span>
               </h3>
               <ul className="flex flex-col">
                 <AnimatePresence initial={false}>
-                  {g.items.map((a) => (
+                  {g.items.map((a, i) => (
                     <Row
                       key={a.id}
                       a={a}
+                      showDate={i === 0 || splitDueAt(g.items[i - 1].due_at).date !== splitDueAt(a.due_at).date}
                       course={courseMap.get(a.course_id)}
                       showCourse={!courseId}
                       today={today}

@@ -25,10 +25,15 @@ export default async function DerslerPage() {
   return (
     <>
       <PageHeader
-        title="Dersler"
+        eyebrow={courses.length > 0 ? `${courses.length} ders` : "Başlangıç"}
+        title={
+          <>
+            Dersler <em>{courses.length > 0 ? "ve haftaları" : "henüz boş"}</em>
+          </>
+        }
         description={
           courses.length > 0
-            ? `${courses.length} ders takip ediliyor`
+            ? "Her çubuk bir hafta: yükseklik o haftaki öğrenme seviyen."
             : "Bu dönem aldığın dersleri ekleyerek başla."
         }
         actions={courses.length > 0 && <NewCourseButton defaults={defaults} />}
@@ -42,7 +47,7 @@ export default async function DerslerPage() {
           action={<NewCourseButton label="İlk dersini ekle" defaults={defaults} />}
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {courses.map((c, i) => (
             <CourseCard key={c.id} course={c} index={i} />
           ))}
